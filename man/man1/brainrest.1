@@ -1,0 +1,80 @@
+.TH BRAINREST 1 "November 2025" "version 1.0.0" "User Commands"
+.SH NAME
+brainrest \- micro-break reminder and system uptime tracker
+
+.SH SYNOPSIS
+.B brainrest
+[\-t] [\-r] [\-g minutes] [\-f] [\-h] [\-v]
+
+.SH DESCRIPTION
+The
+.B brainrest
+utility helps users take regular micro-breaks while working. It keeps track of
+the last recorded break time and can display the system uptime, time since the
+last break, and reminder intervals.
+
+A small log file is stored in the user's home directory to record the timestamp
+of the most recent break.
+
+.SH OPTIONS
+
+.TP
+.BR \-t ", " \-\-time
+Show system uptime in minutes and the time since the last break. No changes are
+made to the break history.
+
+.TP
+.BR \-r ", " \-\-reset
+Reset break history by clearing the log file. This removes the recorded
+timestamp of the last break.
+
+.TP
+.BR \-g " " \fIMINUTES\fR ", " \-\-gap=\fIMINUTES\fR
+Set the reminder gap in minutes. If the time since the last break is greater
+than or equal to this gap, a reminder will be shown. Default is 40 minutes.
+
+.TP
+.BR \-f ", " \-\-force
+Record a break immediately without asking the user. The timestamp stored in the
+log file will be updated.
+
+.TP
+.BR \-h ", " \-\-help
+Show help information and exit.
+
+.TP
+.BR \-v ", " \-\-version
+Show program version and exit.
+
+.SH FILES
+.TP
+.I ~/.brainrest.log
+Stores the timestamp of the last recorded break.
+
+.SH EXAMPLES
+.TP
+Show system uptime and last break time:
+.br
+ brainrest \-t
+
+.TP
+Reset break history:
+.br
+ brainrest \-r
+
+.TP
+Set reminder interval to 50 minutes:
+.br
+ brainrest \-g 50
+
+.TP
+Log a break without prompting:
+.br
+ brainrest \-f
+
+.SH AUTHOR
+Written by Siripireddy Giri.
+
+.SH VERSION
+1.0.0
+

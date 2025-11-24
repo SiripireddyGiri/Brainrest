@@ -1,0 +1,9 @@
+Package: brainrest
+Version: 1.0
+Section: utils
+Priority: optional
+Architecture: all
+Maintainer: Siripireddy Giri <siripireddygirikumar3@gmail.com>
+Description: BrainRest - A small brain exercise tool written in POSIX shell.
+ A simple educational command-line tool with options for word analysis,
+ length checking, random letter generation, and a small quiz.

@@ -1,0 +1,130 @@
+#!/bin/sh
+
+LOGFILE="$HOME/.brainrest.log"
+DEFAULT_GAP=40
+VERSION="1.0.0"
+
+show_help() {
+    echo "brainrest - micro-break reminder tool"
+    echo
+    echo "Usage: brainrest [options]"
+    echo
+    echo "Options:"
+    echo "  -t, --time          Show system uptime + time since last break"
+    echo "  -r, --reset         Reset/clear break history"
+    echo "  -g, --gap MINUTES   Set custom reminder gap (default: 40)"
+    echo "  -f, --force         Log a break without asking"
+    echo "  -v, --version       Show version"
+    echo "  -h, --help          Show this help message"
+}
+
+ONLY_TIME=0
+RESET=0
+FORCE=0
+CUSTOM_GAP=$DEFAULT_GAP
+ASK=1
+
+
+# Parse Arguments
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -t|--time)
+            ONLY_TIME=1
+            ;;
+        -r|--reset)
+            RESET=1
+            ;;
+        -f|--force)
+            FORCE=1
+            ASK=0
+            ;;
+        -g|--gap)
+            shift
+            CUSTOM_GAP=$1
+            ;;
+        -v|--version)
+            echo "brainrest version $VERSION"
+            exit 0
+            ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+
+# Reset Option
+
+if [ $RESET -eq 1 ]; then
+    rm -f "$LOGFILE"
+    echo "Break history reset."
+    exit 0
+fi
+
+
+# Read last break timestamp
+
+if [ -f "$LOGFILE" ]; then
+    last_break=$(cat "$LOGFILE")
+else
+    last_break=0
+fi
+
+current=$(date +%s)
+diff_min=$(( (current - last_break) / 60 ))
+
+
+# TIME OPTION: system uptime + last break
+
+if [ $ONLY_TIME -eq 1 ]; then
+    up_min=$(awk '{print int($1/60)}' /proc/uptime)
+    echo "System uptime: $up_min minutes"
+    echo "Last break: $diff_min minutes ago"
+    exit 0
+fi
+
+
+# Main display
+
+echo "Last break: $diff_min minutes ago."
+
+if [ "$diff_min" -ge "$CUSTOM_GAP" ]; then
+    echo "⏰ Time to take a short break!"
+else
+    echo "Next break in $(( CUSTOM_GAP - diff_min )) minutes."
+fi
+
+
+# Ask user to log a break
+
+if [ $ASK -eq 1 ]; then
+    printf "Log a break now? (y/n): "
+    read ans
+
+    case "$ans" in
+        y|Y)
+            date +%s > "$LOGFILE"
+            echo "Break logged."
+            ;;
+        *)
+            echo "Break not logged."
+            ;;
+    esac
+    exit 0
+fi
+
+
+# FORCE MODE
+
+if [ $FORCE -eq 1 ]; then
+    date +%s > "$LOGFILE"
+    echo "Break forcibly logged."
+    exit 0
+fi
